@@ -1,221 +1,253 @@
-"use client";
+'use client';
 
-import React, { useState } from "react";
-import { useRouter } from "next/navigation";
-import { 
-  Home, 
-  FileText, 
-  Folder, 
-  Star, 
-  Trash2, 
-  Search, 
-  Plus, 
-  Grid, 
-  List, 
-  MoreVertical, 
-  Download, 
-  Eye, 
-  Sun, 
-  Moon,
-  Cloud,
-  User
-} from "lucide-react";
+import { useState, useEffect } from 'react';
+import { useUser, SignInButton, SignOutButton } from '@clerk/nextjs';
+import { supabase } from '@/lib/supabase';
 
-export function DrivePage() {
-  const [activeView, setActiveView] = useState<'grid' | 'list'>('grid');
-  const [activeNav, setActiveNav] = useState('홈');
-  const router = useRouter();
+interface WorkOrder {
+  id: string;
+  title: string;
+  description?: string;
+  status: string;
+  priority: string;
+  created_at: string;
+  due_date?: string;
+  created_by_user?: {
+    full_name: string;
+    email: string;
+  };
+  assigned_to_user?: {
+    full_name: string;
+    email: string;
+  };
+}
 
-  const folders = [
-    { name: '2025 S/S 신상', count: 0 },
-    { name: '2025 S/S 신상', count: 0 },
-    { name: '2025 S/S 신상', count: 0 },
-    { name: '2025 S/S 신상', count: 0 },
-    { name: '2025 S/S 신상', count: 0 },
-    { name: '2025 S/S 신상', count: 0 },
-  ];
+export default function DrivePage() {
+  const { user, isLoaded } = useUser();
+  const [workOrders, setWorkOrders] = useState<WorkOrder[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [newWorkOrder, setNewWorkOrder] = useState({
+    title: '',
+    description: '',
+    priority: 'medium',
+    due_date: ''
+  });
 
-  const files = [
-    { name: '[wiive] 위브 팀웨어_v1', type: '작업지시서', extension: '.pdf' },
-    { name: '[wiive] 위브 팀웨어_v1', type: '작업지시서', extension: '.pdf' },
-    { name: '[wiive] 위브 팀웨어_v1', type: '작업지시서', extension: '.pdf' },
-    { name: '[wiive] 위브 팀웨어_v1', type: '작업지시서', extension: '.pdf' },
-    { name: '[wiive] 위브 팀웨어_v1', type: '작업지시서', extension: '.pdf' },
-    { name: '[wiive] 위브 팀웨어_v1', type: '작업지시서', extension: '.pdf' },
-    { name: '[wiive] 위브 팀웨어_v1', type: '작업지시서', extension: '.pdf' },
-    { name: '[wiive] 위브 팀웨어_v1', type: '작업지시서', extension: '.pdf' },
-    { name: '[wiive] 위브 팀웨어_v1', type: '작업지시서', extension: '.pdf' },
-    { name: '[wiive] 위브 팀웨어_v1', type: '작업지시서', extension: '.pdf' },
-    { name: '[wiive] 위브 팀웨어_v1', type: '작업지시서', extension: '.pdf' },
-    { name: '[wiive] 위브 팀웨어_v1', type: '작업지시서', extension: '.pdf' },
-  ];
+  useEffect(() => {
+    if (isLoaded && user) {
+      fetchWorkOrders();
+    }
+  }, [isLoaded, user]);
 
-  const handleFileClick = () => {
-    router.push('/work-order/1');
+  const fetchWorkOrders = async () => {
+    try {
+      const response = await fetch('/api/work-orders');
+      if (response.ok) {
+        const data = await response.json();
+        setWorkOrders(data);
+      }
+    } catch (error) {
+      console.error('Error fetching work orders:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  return (
-    <div className="flex h-screen bg-background text-foreground">
-      {/* Sidebar */}
-      <div className="w-80 bg-card border-r border-border flex flex-col">
-        {/* User Profile */}
-        <div className="p-5 border-b border-border">
-          <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center text-white text-xl mb-3">
-            U
-          </div>
-          <div className="text-lg font-semibold text-foreground mb-1">
-            사용자
-          </div>
-          <div className="text-sm text-muted-foreground">
-            user@example.com
-          </div>
-          <button className="mt-3 w-full px-3 py-2 border border-border rounded-md hover:bg-muted">
-            로그아웃
-          </button>
+  const createWorkOrder = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newWorkOrder.title.trim()) return;
+
+    try {
+      const response = await fetch('/api/work-orders', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newWorkOrder),
+      });
+
+      if (response.ok) {
+        setNewWorkOrder({ title: '', description: '', priority: 'medium', due_date: '' });
+        fetchWorkOrders();
+      }
+    } catch (error) {
+      console.error('Error creating work order:', error);
+    }
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'completed': return 'bg-green-100 text-green-800';
+      case 'in_progress': return 'bg-blue-100 text-blue-800';
+      case 'cancelled': return 'bg-red-100 text-red-800';
+      default: return 'bg-yellow-100 text-yellow-800';
+    }
+  };
+
+  const getPriorityColor = (priority: string) => {
+    switch (priority) {
+      case 'urgent': return 'bg-red-100 text-red-800';
+      case 'high': return 'bg-orange-100 text-orange-800';
+      case 'medium': return 'bg-yellow-100 text-yellow-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  if (!isLoaded) {
+    return <div className="flex justify-center items-center h-screen">Loading...</div>;
+  }
+
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+        <div className="sm:mx-auto sm:w-full sm:max-w-md">
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+            Fashion Docs
+          </h2>
+          <p className="mt-2 text-center text-sm text-gray-600">
+            작업 주문 관리 시스템에 로그인하세요
+          </p>
         </div>
-
-        {/* Navigation */}
-        <nav className="flex-1 p-5">
-          <div className="space-y-1">
-            {[
-              { icon: Home, label: '홈', active: activeNav === '홈' },
-              { icon: FileText, label: '작업지시서', active: activeNav === '작업지시서' },
-              { icon: Folder, label: '내 드라이브', active: activeNav === '내 드라이브' },
-              { icon: Star, label: '즐겨찾기', active: activeNav === '즐겨찾기' },
-              { icon: Trash2, label: '휴지통', active: activeNav === '휴지통' },
-            ].map((item) => (
-              <button
-                key={item.label}
-                onClick={() => setActiveNav(item.label)}
-                className={`w-full flex items-center gap-3 px-3 py-3 rounded-md transition-colors ${
-                  item.active 
-                    ? 'bg-primary text-primary-foreground' 
-                    : 'text-muted-foreground hover:bg-muted hover:text-foreground'
-                }`}
-              >
-                <item.icon size={18} />
-                <span className="text-sm font-medium">{item.label}</span>
+        <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+          <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+            <SignInButton mode="modal">
+              <button className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                로그인
               </button>
-            ))}
-          </div>
-        </nav>
-
-        {/* Storage Section */}
-        <div className="p-5 border-t border-border">
-          <h3 className="text-sm font-semibold text-foreground mb-3">저장용량</h3>
-          <div className="text-xs text-muted-foreground mb-4">1GB 중 80MB 사용</div>
-          <div className="w-full h-1.5 bg-muted rounded-full mb-4 overflow-hidden">
-            <div className="w-[8%] h-full bg-primary rounded-full"></div>
-          </div>
-          <button className="w-full mb-3 px-3 py-2 border border-border rounded-md hover:bg-muted flex items-center justify-center">
-            <Plus size={12} className="mr-2" />
-            저장공간 10GB 사용하기
-          </button>
-          <div className="text-xs text-muted-foreground leading-relaxed">
-            Pro 요금제로 업그레이드하면 10GB 의 저장 공간을 사용할 수 있습니다.<br/>
-            Pro 요금제 업그레이드 (출시 예정)
+            </SignInButton>
           </div>
         </div>
       </div>
+    );
+  }
 
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col">
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         {/* Header */}
-        <header className="flex items-center justify-between p-5 border-b border-border">
-          <div className="flex items-center gap-4 flex-1 max-w-md">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={16} />
-              <input 
-                placeholder="파일 제목을 검색하세요" 
-                className="w-full pl-10 pr-3 py-2 border border-border rounded-md bg-background"
-              />
+        <div className="px-4 py-6 sm:px-0">
+          <div className="flex justify-between items-center">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">Fashion Docs</h1>
+              <p className="mt-1 text-sm text-gray-500">
+                안녕하세요, {user.firstName || user.emailAddresses[0]?.emailAddress}님
+              </p>
             </div>
+            <SignOutButton>
+              <button className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium">
+                로그아웃
+              </button>
+            </SignOutButton>
           </div>
-          <div className="flex items-center gap-3">
-            <button className="px-3 py-2 border border-border rounded-md hover:bg-muted">
-              <Sun size={16} />
-            </button>
-            <button className="px-3 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 flex items-center">
-              <Plus size={16} className="mr-2" />
-              새 항목 추가
-            </button>
-          </div>
-        </header>
+        </div>
 
-        {/* Content */}
-        <div className="flex-1 p-5 overflow-y-auto">
-          {/* Banner */}
-          <div className="mb-8 p-10 text-center bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg">
-            <h2 className="text-2xl font-bold mb-4">WiiVE, Creative한 발상의 전환</h2>
-            <button className="px-4 py-2 bg-white/20 border border-white/30 text-white rounded-md hover:bg-white/30">
-              출시 예정 기능 보기
-            </button>
-          </div>
-
-          {/* Recent Designs */}
-          <section className="mb-8">
-            <h3 className="text-lg font-semibold text-foreground mb-5">최근 디자인</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-              {folders.map((folder, index) => (
-                <div key={index} className="p-5 text-center relative border border-border rounded-lg hover:bg-muted/50 transition-colors cursor-pointer">
-                  <button className="absolute top-2 right-2 text-muted-foreground hover:text-foreground">
-                    <MoreVertical size={16} />
-                  </button>
-                  <div className="text-4xl mb-4">📁</div>
-                  <div className="font-medium text-foreground mb-1">{folder.name}</div>
-                  <div className="text-sm text-muted-foreground">{folder.count}개</div>
-                </div>
-              ))}
-            </div>
-          </section>
-
-          {/* All Files */}
-          <section>
-            <div className="flex items-center justify-between mb-5">
-              <h3 className="text-lg font-semibold text-foreground">전체</h3>
-              <div className="flex gap-1">
-                <button
-                  className={`px-3 py-2 rounded-md ${
-                    activeView === 'list' ? 'bg-primary text-primary-foreground' : 'border border-border hover:bg-muted'
-                  }`}
-                  onClick={() => setActiveView('list')}
+        {/* New Work Order Form */}
+        <div className="bg-white shadow rounded-lg p-6 mb-6">
+          <h2 className="text-lg font-medium text-gray-900 mb-4">새 작업 주문</h2>
+          <form onSubmit={createWorkOrder} className="space-y-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div>
+                <label className="block text-sm font-medium text-gray-700">제목</label>
+                <input
+                  type="text"
+                  value={newWorkOrder.title}
+                  onChange={(e) => setNewWorkOrder({...newWorkOrder, title: e.target.value})}
+                  className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">우선순위</label>
+                <select
+                  value={newWorkOrder.priority}
+                  onChange={(e) => setNewWorkOrder({...newWorkOrder, priority: e.target.value})}
+                  className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                 >
-                  <List size={16} />
-                </button>
-                <button
-                  className={`px-3 py-2 rounded-md ${
-                    activeView === 'grid' ? 'bg-primary text-primary-foreground' : 'border border-border hover:bg-muted'
-                  }`}
-                  onClick={() => setActiveView('grid')}
-                >
-                  <Grid size={16} />
-                </button>
+                  <option value="low">낮음</option>
+                  <option value="medium">보통</option>
+                  <option value="high">높음</option>
+                  <option value="urgent">긴급</option>
+                </select>
               </div>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-              {files.map((file, index) => (
-                <div key={index} className="p-5 relative border border-border rounded-lg hover:bg-muted/50 transition-colors cursor-pointer" onClick={handleFileClick}>
-                  <button className="absolute top-2 right-2 text-muted-foreground hover:text-foreground">
-                    <MoreVertical size={16} />
-                  </button>
-                  <div className="w-full h-32 bg-muted rounded-md mb-4 flex items-center justify-center relative">
-                    <div className="absolute top-2 left-2 bg-primary text-primary-foreground px-2 py-1 rounded text-xs font-medium">
-                      {file.type}
-                    </div>
-                    <div className="absolute top-2 right-2 bg-muted text-muted-foreground px-2 py-1 rounded text-xs">
-                      {file.extension}
-                    </div>
-                    <div className="text-center">
-                      <div className="text-2xl mb-1">👖</div>
-                      <div className="text-sm text-muted-foreground">도식화</div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">설명</label>
+              <textarea
+                value={newWorkOrder.description}
+                onChange={(e) => setNewWorkOrder({...newWorkOrder, description: e.target.value})}
+                rows={3}
+                className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">마감일</label>
+              <input
+                type="date"
+                value={newWorkOrder.due_date}
+                onChange={(e) => setNewWorkOrder({...newWorkOrder, due_date: e.target.value})}
+                className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              />
+            </div>
+            <div className="flex justify-end">
+              <button
+                type="submit"
+                className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md text-sm font-medium"
+              >
+                작업 주문 생성
+              </button>
+            </div>
+          </form>
+        </div>
+
+        {/* Work Orders List */}
+        <div className="bg-white shadow rounded-lg">
+          <div className="px-4 py-5 sm:p-6">
+            <h2 className="text-lg font-medium text-gray-900 mb-4">작업 주문 목록</h2>
+            {loading ? (
+              <div className="text-center py-4">로딩 중...</div>
+            ) : workOrders.length === 0 ? (
+              <div className="text-center py-4 text-gray-500">작업 주문이 없습니다.</div>
+            ) : (
+              <div className="space-y-4">
+                {workOrders.map((workOrder) => (
+                  <div key={workOrder.id} className="border rounded-lg p-4 hover:bg-gray-50">
+                    <div className="flex justify-between items-start">
+                      <div className="flex-1">
+                        <h3 className="text-lg font-medium text-gray-900">{workOrder.title}</h3>
+                        {workOrder.description && (
+                          <p className="mt-1 text-sm text-gray-600">{workOrder.description}</p>
+                        )}
+                        <div className="mt-2 flex items-center space-x-4 text-sm text-gray-500">
+                          <span>생성자: {workOrder.created_by_user?.full_name || 'Unknown'}</span>
+                          {workOrder.assigned_to_user && (
+                            <span>담당자: {workOrder.assigned_to_user.full_name}</span>
+                          )}
+                          <span>생성일: {new Date(workOrder.created_at).toLocaleDateString()}</span>
+                          {workOrder.due_date && (
+                            <span>마감일: {new Date(workOrder.due_date).toLocaleDateString()}</span>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex space-x-2">
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(workOrder.status)}`}>
+                          {workOrder.status === 'pending' && '대기중'}
+                          {workOrder.status === 'in_progress' && '진행중'}
+                          {workOrder.status === 'completed' && '완료'}
+                          {workOrder.status === 'cancelled' && '취소'}
+                        </span>
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getPriorityColor(workOrder.priority)}`}>
+                          {workOrder.priority === 'low' && '낮음'}
+                          {workOrder.priority === 'medium' && '보통'}
+                          {workOrder.priority === 'high' && '높음'}
+                          {workOrder.priority === 'urgent' && '긴급'}
+                        </span>
+                      </div>
                     </div>
                   </div>
-                  <div className="font-medium text-foreground mb-1 text-left">{file.name}</div>
-                  <div className="text-sm text-muted-foreground text-left">{file.type} • {file.extension}</div>
-                </div>
-              ))}
-            </div>
-          </section>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>

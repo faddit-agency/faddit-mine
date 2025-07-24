@@ -1,17 +1,50 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { supabase } from '@/lib/supabase';
+import { auth } from '@clerk/nextjs/server';
 
 export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
-    // 임시 응답 - 환경 변수 설정 후 실제 구현으로 교체
-    return NextResponse.json({
-      message: 'Work order detail endpoint ready - environment variables need to be configured',
-      status: 'pending',
-      id: params.id
-    });
+    const { userId } = await auth();
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // 사용자 정보 가져오기
+    const { data: user } = await supabase
+      .from('users')
+      .select('id')
+      .eq('clerk_id', userId)
+      .single();
+
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+
+    // 작업 주문 상세 정보 가져오기
+    const { data: workOrder, error } = await supabase
+      .from('work_orders')
+      .select(`
+        *,
+        created_by_user:users!work_orders_created_by_fkey(id, full_name, email),
+        assigned_to_user:users!work_orders_assigned_to_fkey(id, full_name, email),
+        files(id, file_name, file_path, file_size, mime_type, created_at)
+      `)
+      .eq('id', params.id)
+      .or(`created_by.eq.${user.id},assigned_to.eq.${user.id}`)
+      .single();
+
+    if (error) {
+      console.error('Database error:', error);
+      return NextResponse.json({ error: 'Work order not found' }, { status: 404 });
+    }
+
+    return NextResponse.json(workOrder);
+
   } catch (error) {
+    console.error('GET work order detail error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
@@ -21,13 +54,55 @@ export async function PUT(
   { params }: { params: { id: string } }
 ) {
   try {
-    // 임시 응답 - 환경 변수 설정 후 실제 구현으로 교체
-    return NextResponse.json({
-      message: 'Work order update endpoint ready - environment variables need to be configured',
-      status: 'pending',
-      id: params.id
-    });
+    const { userId } = await auth();
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const body = await request.json();
+    const { title, description, status, priority, assigned_to, due_date } = body;
+
+    // 사용자 정보 가져오기
+    const { data: user } = await supabase
+      .from('users')
+      .select('id')
+      .eq('clerk_id', userId)
+      .single();
+
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+
+    // 작업 주문 업데이트
+    const { data: workOrder, error } = await supabase
+      .from('work_orders')
+      .update({
+        title,
+        description,
+        status,
+        priority,
+        assigned_to,
+        due_date: due_date ? new Date(due_date).toISOString() : null,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', params.id)
+      .or(`created_by.eq.${user.id},assigned_to.eq.${user.id}`)
+      .select(`
+        *,
+        created_by_user:users!work_orders_created_by_fkey(id, full_name, email),
+        assigned_to_user:users!work_orders_assigned_to_fkey(id, full_name, email)
+      `)
+      .single();
+
+    if (error) {
+      console.error('Database error:', error);
+      return NextResponse.json({ error: 'Failed to update work order' }, { status: 500 });
+    }
+
+    return NextResponse.json(workOrder);
+
   } catch (error) {
+    console.error('PUT work order error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
@@ -37,13 +112,38 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    // 임시 응답 - 환경 변수 설정 후 실제 구현으로 교체
-    return NextResponse.json({
-      message: 'Work order deletion endpoint ready - environment variables need to be configured',
-      status: 'pending',
-      id: params.id
-    });
+    const { userId } = await auth();
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // 사용자 정보 가져오기
+    const { data: user } = await supabase
+      .from('users')
+      .select('id')
+      .eq('clerk_id', userId)
+      .single();
+
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+
+    // 작업 주문 삭제 (생성자만 삭제 가능)
+    const { error } = await supabase
+      .from('work_orders')
+      .delete()
+      .eq('id', params.id)
+      .eq('created_by', user.id);
+
+    if (error) {
+      console.error('Database error:', error);
+      return NextResponse.json({ error: 'Failed to delete work order' }, { status: 500 });
+    }
+
+    return NextResponse.json({ success: true });
+
   } catch (error) {
+    console.error('DELETE work order error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 } 
