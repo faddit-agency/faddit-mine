@@ -12,6 +12,11 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    // Supabase 클라이언트가 설정되지 않은 경우
+    if (!supabase) {
+      return NextResponse.json({ error: 'Supabase not configured' }, { status: 500 });
+    }
+
     // 사용자 정보 가져오기
     const { data: user } = await supabase
       .from('users')
@@ -57,6 +62,11 @@ export async function PUT(
     const { userId } = await auth();
     if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Supabase 클라이언트가 설정되지 않은 경우
+    if (!supabase) {
+      return NextResponse.json({ error: 'Supabase not configured' }, { status: 500 });
     }
 
     const body = await request.json();
@@ -115,6 +125,11 @@ export async function DELETE(
     const { userId } = await auth();
     if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Supabase 클라이언트가 설정되지 않은 경우
+    if (!supabase) {
+      return NextResponse.json({ error: 'Supabase not configured' }, { status: 500 });
     }
 
     // 사용자 정보 가져오기

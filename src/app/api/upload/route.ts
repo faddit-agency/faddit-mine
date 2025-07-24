@@ -9,6 +9,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    // Supabase 클라이언트가 설정되지 않은 경우
+    if (!supabase) {
+      return NextResponse.json({ error: 'Supabase not configured' }, { status: 500 });
+    }
+
     const formData = await request.formData();
     const file = formData.get('file') as File;
     const workOrderId = formData.get('workOrderId') as string;
