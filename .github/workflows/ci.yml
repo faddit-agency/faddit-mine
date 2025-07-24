@@ -25,12 +25,21 @@ jobs:
       
     - name: Create environment file
       run: |
-        echo "NEXT_PUBLIC_SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}" >> .env.local
-        echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}" >> .env.local
-        echo "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}" >> .env.local
-        echo "CLERK_SECRET_KEY=${{ secrets.CLERK_SECRET_KEY }}" >> .env.local
-        echo "NEXT_PUBLIC_APP_URL=${{ secrets.NEXT_PUBLIC_APP_URL }}" >> .env.local
+        # 환경 변수 설정 (비어있으면 빈 문자열로 설정)
+        echo "NEXT_PUBLIC_SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL || '' }}" >> .env.local
+        echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY || '' }}" >> .env.local
+        echo "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY || '' }}" >> .env.local
+        echo "CLERK_SECRET_KEY=${{ secrets.CLERK_SECRET_KEY || '' }}" >> .env.local
+        echo "NEXT_PUBLIC_APP_URL=${{ secrets.NEXT_PUBLIC_APP_URL || 'https://faddit-mine-jay-1346s-projects.vercel.app' }}" >> .env.local
         echo "NODE_ENV=production" >> .env.local
+        
+        # 환경 변수 확인 (값은 숨김)
+        echo "Environment variables check:"
+        echo "SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL != '' && 'SET' || 'NOT SET' }}"
+        echo "SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY != '' && 'SET' || 'NOT SET' }}"
+        echo "CLERK_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY != '' && 'SET' || 'NOT SET' }}"
+        echo "CLERK_SECRET_KEY: ${{ secrets.CLERK_SECRET_KEY != '' && 'SET' || 'NOT SET' }}"
+        echo "APP_URL: ${{ secrets.NEXT_PUBLIC_APP_URL != '' && 'SET' || 'NOT SET' }}"
       
     - name: Run linting
       run: npm run lint
@@ -61,12 +70,21 @@ jobs:
       
     - name: Create environment file
       run: |
-        echo "NEXT_PUBLIC_SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}" >> .env.local
-        echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}" >> .env.local
-        echo "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}" >> .env.local
-        echo "CLERK_SECRET_KEY=${{ secrets.CLERK_SECRET_KEY }}" >> .env.local
-        echo "NEXT_PUBLIC_APP_URL=${{ secrets.NEXT_PUBLIC_APP_URL }}" >> .env.local
+        # 환경 변수 설정 (비어있으면 빈 문자열로 설정)
+        echo "NEXT_PUBLIC_SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL || '' }}" >> .env.local
+        echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY || '' }}" >> .env.local
+        echo "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY || '' }}" >> .env.local
+        echo "CLERK_SECRET_KEY=${{ secrets.CLERK_SECRET_KEY || '' }}" >> .env.local
+        echo "NEXT_PUBLIC_APP_URL=${{ secrets.NEXT_PUBLIC_APP_URL || 'https://faddit-mine-jay-1346s-projects.vercel.app' }}" >> .env.local
         echo "NODE_ENV=production" >> .env.local
+        
+        # 환경 변수 확인 (값은 숨김)
+        echo "Environment variables check:"
+        echo "SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL != '' && 'SET' || 'NOT SET' }}"
+        echo "SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY != '' && 'SET' || 'NOT SET' }}"
+        echo "CLERK_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY != '' && 'SET' || 'NOT SET' }}"
+        echo "CLERK_SECRET_KEY: ${{ secrets.CLERK_SECRET_KEY != '' && 'SET' || 'NOT SET' }}"
+        echo "APP_URL: ${{ secrets.NEXT_PUBLIC_APP_URL != '' && 'SET' || 'NOT SET' }}"
       
     - name: Build application
       run: npm run build
