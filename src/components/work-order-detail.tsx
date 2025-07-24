@@ -4,626 +4,311 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { 
   ArrowLeft, 
-  X, 
-  Plus, 
-  Minus, 
   Download, 
-  Eye, 
-  Edit3, 
-  Trash2, 
-  MoreVertical, 
   Share, 
-  Calendar, 
-  Cloud,
-  Upload
+  Edit, 
+  Trash2, 
+  MoreVertical,
+  FileText,
+  Calendar,
+  User,
+  Tag
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Switch } from "@/components/ui/switch";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-interface WorkOrderDetailProps {
-  id: string;
-}
-
-export function WorkOrderDetail({ id }: WorkOrderDetailProps) {
+export function WorkOrderDetail() {
   const router = useRouter();
-  const [showDetails, setShowDetails] = useState(true);
-  const [activeTab, setActiveTab] = useState('2025 F/W 프라다 여성 신상');
+  const [activeTab, setActiveTab] = useState('overview');
 
-  const tabs = [
-    '[wiive] 위브 팀웨어_v1',
-    '[stitch] 스티치 여성 하의 라인_v1',
-    '[stitch] 스티치 여성 하의 라인_v2',
-    '2025 F/W 프라다 여성 신상'
-  ];
-
-  const [basicInfo, setBasicInfo] = useState({
-    brand: '프라다',
-    item: '남성자켓',
-    gender: '남성',
-    category: '상의',
-    apparel: '셔츠',
-    season: '2025',
-    seasonType: 'S/S'
-  });
-
-  const [additionalInfo, setAdditionalInfo] = useState({
-    productName: '',
-    sampleNumber: '',
-    productNumber: '',
-    manufacturer: '',
-    requestDate: '',
-    deliveryDate: '',
-    contact1: '',
-    contact2: '',
-    contact3: '',
-    contactInfo: ''
-  });
+  const workOrder = {
+    id: '1',
+    title: '[wiive] 위브 팀웨어_v1',
+    status: '진행중',
+    category: '팀웨어',
+    brand: 'WiiVE',
+    item: '상의',
+    description: '2025 S/S 시즌 위브 팀웨어 컬렉션의 상의 디자인 작업지시서입니다.',
+    createdAt: '2024-01-15',
+    updatedAt: '2024-01-20',
+    assignedTo: '김디자이너',
+    priority: '높음',
+    files: [
+      { name: '디자인_스케치.pdf', type: '스케치', size: '2.3MB' },
+      { name: '색상_팔레트.pdf', type: '색상', size: '1.1MB' },
+      { name: '패턴_도안.pdf', type: '패턴', size: '3.7MB' }
+    ]
+  };
 
   return (
-    <div className="flex flex-col h-screen bg-background text-foreground">
-      {/* Browser Header */}
-      <div className="flex items-center justify-between px-5 py-2 bg-card border-b border-border h-10">
-        <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-full bg-red-500"></div>
-          <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
-          <div className="w-3 h-3 rounded-full bg-green-500"></div>
-        </div>
-        <div className="flex-1 flex justify-center">
-          <span className="text-sm text-muted-foreground">○ 세부정보</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <Download size={14} className="text-muted-foreground" />
-          <Plus size={14} className="text-muted-foreground" />
-          <div className="w-4 h-4 border border-border"></div>
-        </div>
-      </div>
-
-      {/* Browser Tabs */}
-      <div className="flex bg-card border-b border-border">
-        {tabs.map((tab, index) => (
-          <div
-            key={index}
-            className={`px-5 py-3 border-r border-border cursor-pointer relative min-w-[200px] ${
-              tab === activeTab 
-                ? 'bg-background text-foreground' 
-                : 'text-muted-foreground hover:bg-muted'
-            }`}
-            onClick={() => setActiveTab(tab)}
-          >
-            {tab}
-            <button className="absolute top-2 right-2 text-muted-foreground hover:text-foreground text-xs">
-              ×
+    <div className="min-h-screen bg-background text-foreground">
+      {/* Header */}
+      <header className="border-b border-border bg-card">
+        <div className="flex items-center justify-between p-6">
+          <div className="flex items-center gap-4">
+            <button 
+              onClick={() => router.back()}
+              className="p-2 hover:bg-muted rounded-md"
+            >
+              <ArrowLeft size={20} />
+            </button>
+            <div>
+              <h1 className="text-2xl font-bold">{workOrder.title}</h1>
+              <p className="text-muted-foreground">작업지시서 #{workOrder.id}</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <button className="px-4 py-2 border border-border rounded-md hover:bg-muted flex items-center gap-2">
+              <Download size={16} />
+              내보내기
+            </button>
+            <button className="px-4 py-2 border border-border rounded-md hover:bg-muted flex items-center gap-2">
+              <Share size={16} />
+              공유
+            </button>
+            <button className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 flex items-center gap-2">
+              <Edit size={16} />
+              편집
             </button>
           </div>
-        ))}
-      </div>
-
-      {/* App Header */}
-      <div className="flex items-center justify-between px-5 py-4 bg-card border-b border-border">
-        <div className="flex items-center gap-3">
-          <h1 className="text-lg font-semibold text-foreground">2025 F/W 프라다</h1>
-          <div className="flex items-center gap-1 text-sm text-muted-foreground">
-            <Cloud size={14} />
-            드라이브에 저장됨
-          </div>
         </div>
-        <div className="flex items-center gap-3">
-          <Button variant="outline" size="sm">
-            <Edit3 size={14} className="mr-2" />
-            화면 편집
-          </Button>
-          <Button size="sm">
-            <Share size={14} className="mr-2" />
-            Share
-          </Button>
-        </div>
-      </div>
+      </header>
 
-      {/* Content */}
-      <div className="flex flex-1 overflow-hidden">
-        {/* Sidebar */}
-        <div className="w-96 bg-card border-r border-border overflow-y-auto p-5">
-          <div className="flex items-center gap-3 mb-6">
-            <span className="text-sm font-medium text-foreground">세부정보</span>
-            <Switch 
-              checked={showDetails} 
-              onCheckedChange={setShowDetails}
-            />
-          </div>
-
-          <div className="space-y-6">
-            {/* Basic Information */}
-            <div>
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-sm font-semibold text-foreground">기본 정보</h3>
-                <Button variant="outline" size="sm">
-                  <Plus size={12} />
-                </Button>
-              </div>
-              
-              <div className="space-y-4">
-                <div>
-                  <Label htmlFor="brand" className="text-sm text-muted-foreground">브랜드</Label>
-                  <Input 
-                    id="brand"
-                    value={basicInfo.brand}
-                    onChange={(e) => setBasicInfo({...basicInfo, brand: e.target.value})}
-                    className="mt-1"
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="item" className="text-sm text-muted-foreground">아이템</Label>
-                  <Select value={basicInfo.item} onValueChange={(value) => setBasicInfo({...basicInfo, item: value})}>
-                    <SelectTrigger className="mt-1">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="남성자켓">남성자켓</SelectItem>
-                      <SelectItem value="여성자켓">여성자켓</SelectItem>
-                      <SelectItem value="남성셔츠">남성셔츠</SelectItem>
-                      <SelectItem value="여성셔츠">여성셔츠</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div>
-                  <Label htmlFor="gender" className="text-sm text-muted-foreground">성별</Label>
-                  <Select value={basicInfo.gender} onValueChange={(value) => setBasicInfo({...basicInfo, gender: value})}>
-                    <SelectTrigger className="mt-1">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="남성">남성</SelectItem>
-                      <SelectItem value="여성">여성</SelectItem>
-                      <SelectItem value="공용">공용</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div>
-                  <Label htmlFor="category" className="text-sm text-muted-foreground">카테고리</Label>
-                  <Select value={basicInfo.category} onValueChange={(value) => setBasicInfo({...basicInfo, category: value})}>
-                    <SelectTrigger className="mt-1">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="상의">상의</SelectItem>
-                      <SelectItem value="하의">하의</SelectItem>
-                      <SelectItem value="아우터">아우터</SelectItem>
-                      <SelectItem value="신발">신발</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div>
-                  <Label htmlFor="apparel" className="text-sm text-muted-foreground">의류</Label>
-                  <Select value={basicInfo.apparel} onValueChange={(value) => setBasicInfo({...basicInfo, apparel: value})}>
-                    <SelectTrigger className="mt-1">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="셔츠">셔츠</SelectItem>
-                      <SelectItem value="자켓">자켓</SelectItem>
-                      <SelectItem value="코트">코트</SelectItem>
-                      <SelectItem value="니트">니트</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div>
-                  <Label className="text-sm text-muted-foreground">시즌</Label>
-                  <div className="flex gap-2 mt-1">
-                    <Input 
-                      value={basicInfo.season}
-                      onChange={(e) => setBasicInfo({...basicInfo, season: e.target.value})}
-                      className="flex-1"
-                    />
-                    <Select value={basicInfo.seasonType} onValueChange={(value) => setBasicInfo({...basicInfo, seasonType: value})}>
-                      <SelectTrigger className="w-20">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="S/S">S/S</SelectItem>
-                        <SelectItem value="F/W">F/W</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Additional Information */}
-            <div>
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-sm font-semibold text-foreground">추가 정보</h3>
-                <Button variant="outline" size="sm">
-                  <Plus size={12} />
-                </Button>
-              </div>
-              
-              <div className="space-y-4">
-                <div>
-                  <Label htmlFor="productName" className="text-sm text-muted-foreground">품명</Label>
-                  <Input 
-                    id="productName"
-                    value={additionalInfo.productName}
-                    onChange={(e) => setAdditionalInfo({...additionalInfo, productName: e.target.value})}
-                    className="mt-1"
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="sampleNumber" className="text-sm text-muted-foreground">샘플 번호</Label>
-                  <Input 
-                    id="sampleNumber"
-                    value={additionalInfo.sampleNumber}
-                    onChange={(e) => setAdditionalInfo({...additionalInfo, sampleNumber: e.target.value})}
-                    className="mt-1"
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="productNumber" className="text-sm text-muted-foreground">제품 번호</Label>
-                  <Input 
-                    id="productNumber"
-                    value={additionalInfo.productNumber}
-                    onChange={(e) => setAdditionalInfo({...additionalInfo, productNumber: e.target.value})}
-                    className="mt-1"
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="manufacturer" className="text-sm text-muted-foreground">생산처</Label>
-                  <Input 
-                    id="manufacturer"
-                    value={additionalInfo.manufacturer}
-                    onChange={(e) => setAdditionalInfo({...additionalInfo, manufacturer: e.target.value})}
-                    className="mt-1"
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="requestDate" className="text-sm text-muted-foreground">의뢰일</Label>
-                  <div className="relative mt-1">
-                    <Input 
-                      id="requestDate"
-                      type="date"
-                      value={additionalInfo.requestDate}
-                      onChange={(e) => setAdditionalInfo({...additionalInfo, requestDate: e.target.value})}
-                    />
-                    <Calendar size={14} className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
-                  </div>
-                </div>
-
-                <div>
-                  <Label htmlFor="deliveryDate" className="text-sm text-muted-foreground">납기일</Label>
-                  <div className="relative mt-1">
-                    <Input 
-                      id="deliveryDate"
-                      type="date"
-                      value={additionalInfo.deliveryDate}
-                      onChange={(e) => setAdditionalInfo({...additionalInfo, deliveryDate: e.target.value})}
-                    />
-                    <Calendar size={14} className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
-                  </div>
-                </div>
-
-                <div>
-                  <Label htmlFor="contact1" className="text-sm text-muted-foreground">담당자 1</Label>
-                  <Input 
-                    id="contact1"
-                    value={additionalInfo.contact1}
-                    onChange={(e) => setAdditionalInfo({...additionalInfo, contact1: e.target.value})}
-                    className="mt-1"
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="contact2" className="text-sm text-muted-foreground">담당자 2</Label>
-                  <Input 
-                    id="contact2"
-                    value={additionalInfo.contact2}
-                    onChange={(e) => setAdditionalInfo({...additionalInfo, contact2: e.target.value})}
-                    className="mt-1"
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="contact3" className="text-sm text-muted-foreground">담당자 3</Label>
-                  <Input 
-                    id="contact3"
-                    value={additionalInfo.contact3}
-                    onChange={(e) => setAdditionalInfo({...additionalInfo, contact3: e.target.value})}
-                    className="mt-1"
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="contactInfo" className="text-sm text-muted-foreground">연락처</Label>
-                  <Input 
-                    id="contactInfo"
-                    value={additionalInfo.contactInfo}
-                    onChange={(e) => setAdditionalInfo({...additionalInfo, contactInfo: e.target.value})}
-                    className="mt-1"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
+      <div className="flex">
         {/* Main Content */}
-        <div className="flex-1 overflow-y-auto p-5">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Technical Drawing */}
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">도식화</CardTitle>
-                <Button variant="ghost" size="sm">
-                  <X size={14} />
-                </Button>
-              </CardHeader>
-              <CardContent>
-                <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-10 text-center cursor-pointer hover:border-muted-foreground/50 transition-colors">
-                  <Upload size={24} className="mx-auto mb-3 text-muted-foreground" />
-                  <p className="text-sm text-muted-foreground">도식화 이미지를 업로드하세요</p>
+        <div className="flex-1 p-6">
+          {/* Status Banner */}
+          <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+              <span className="font-medium text-blue-900">진행중</span>
+              <span className="text-blue-700">• 마지막 업데이트: {workOrder.updatedAt}</span>
+            </div>
+          </div>
+
+          {/* Tabs */}
+          <div className="mb-6">
+            <div className="flex border-b border-border">
+              {[
+                { id: 'overview', label: '개요' },
+                { id: 'files', label: '파일' },
+                { id: 'history', label: '히스토리' },
+                { id: 'comments', label: '댓글' }
+              ].map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`px-4 py-2 border-b-2 font-medium ${
+                    activeTab === tab.id 
+                      ? 'border-primary text-primary' 
+                      : 'border-transparent text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Tab Content */}
+          {activeTab === 'overview' && (
+            <div className="space-y-6">
+              {/* Basic Info */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-sm font-medium text-muted-foreground">제목</label>
+                    <p className="text-lg font-semibold">{workOrder.title}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-muted-foreground">설명</label>
+                    <p className="text-foreground">{workOrder.description}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-muted-foreground">브랜드</label>
+                    <p className="text-foreground">{workOrder.brand}</p>
+                  </div>
                 </div>
-                <Button variant="outline" size="sm" className="mt-3">
-                  <Edit3 size={14} className="mr-2" />
-                  Edit Mode
-                </Button>
-              </CardContent>
-            </Card>
-
-            {/* Work Notes */}
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">작업 시 주의사항</CardTitle>
-                <Button variant="ghost" size="sm">
-                  <X size={14} />
-                </Button>
-              </CardHeader>
-              <CardContent>
-                <Textarea 
-                  placeholder="작업 시 주의사항을 입력하세요"
-                  className="min-h-[120px]"
-                />
-              </CardContent>
-            </Card>
-
-            {/* Size Spec */}
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Size Spec cm/단면</CardTitle>
-                <Button variant="ghost" size="sm">
-                  <X size={14} />
-                </Button>
-              </CardHeader>
-              <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="text-xs">XS</TableHead>
-                      <TableHead className="text-xs">S</TableHead>
-                      <TableHead className="text-xs">M</TableHead>
-                      <TableHead className="text-xs">L</TableHead>
-                      <TableHead className="text-xs">XL</TableHead>
-                      <TableHead className="text-xs">+</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    <TableRow>
-                      <TableCell className="text-xs">-</TableCell>
-                      <TableCell className="text-xs">100</TableCell>
-                      <TableCell className="text-xs">300</TableCell>
-                      <TableCell className="text-xs">-</TableCell>
-                      <TableCell className="text-xs">200</TableCell>
-                      <TableCell className="text-xs">-</TableCell>
-                    </TableRow>
-                  </TableBody>
-                </Table>
-                <Button variant="outline" size="sm" className="mt-3">
-                  <Plus size={12} className="mr-2" />
-                </Button>
-              </CardContent>
-            </Card>
-
-            {/* Quantity by Color/Size */}
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">색상/사이즈 별 수량</CardTitle>
-                <Button variant="ghost" size="sm">
-                  <X size={14} />
-                </Button>
-              </CardHeader>
-              <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="text-xs">XS</TableHead>
-                      <TableHead className="text-xs">S</TableHead>
-                      <TableHead className="text-xs">M</TableHead>
-                      <TableHead className="text-xs">L</TableHead>
-                      <TableHead className="text-xs">XL</TableHead>
-                      <TableHead className="text-xs">2XL</TableHead>
-                      <TableHead className="text-xs">+</TableHead>
-                      <TableHead className="text-xs">Total</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    <TableRow>
-                      <TableCell className="text-xs">-</TableCell>
-                      <TableCell className="text-xs">100</TableCell>
-                      <TableCell className="text-xs">300</TableCell>
-                      <TableCell className="text-xs">-</TableCell>
-                      <TableCell className="text-xs">200</TableCell>
-                      <TableCell className="text-xs">200</TableCell>
-                      <TableCell className="text-xs">-</TableCell>
-                      <TableCell className="text-xs">600</TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell className="text-xs">-</TableCell>
-                      <TableCell className="text-xs">100</TableCell>
-                      <TableCell className="text-xs">300</TableCell>
-                      <TableCell className="text-xs">-</TableCell>
-                      <TableCell className="text-xs">200</TableCell>
-                      <TableCell className="text-xs">200</TableCell>
-                      <TableCell className="text-xs">-</TableCell>
-                      <TableCell className="text-xs">600</TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell className="text-xs">-</TableCell>
-                      <TableCell className="text-xs">100</TableCell>
-                      <TableCell className="text-xs">300</TableCell>
-                      <TableCell className="text-xs">-</TableCell>
-                      <TableCell className="text-xs">200</TableCell>
-                      <TableCell className="text-xs">200</TableCell>
-                      <TableCell className="text-xs">-</TableCell>
-                      <TableCell className="text-xs">600</TableCell>
-                    </TableRow>
-                    <TableRow className="font-bold">
-                      <TableCell className="text-xs">-</TableCell>
-                      <TableCell className="text-xs">400</TableCell>
-                      <TableCell className="text-xs">1,200</TableCell>
-                      <TableCell className="text-xs">-</TableCell>
-                      <TableCell className="text-xs">800</TableCell>
-                      <TableCell className="text-xs">800</TableCell>
-                      <TableCell className="text-xs">-</TableCell>
-                      <TableCell className="text-xs">2,400</TableCell>
-                    </TableRow>
-                  </TableBody>
-                </Table>
-                <Button variant="outline" size="sm" className="mt-3">
-                  <Plus size={12} className="mr-2" />
-                </Button>
-              </CardContent>
-            </Card>
-
-            {/* Label Position */}
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">라벨위치</CardTitle>
-                <Button variant="ghost" size="sm">
-                  <X size={14} />
-                </Button>
-              </CardHeader>
-              <CardContent>
-                <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-10 text-center cursor-pointer hover:border-muted-foreground/50 transition-colors">
-                  <Upload size={24} className="mx-auto mb-3 text-muted-foreground" />
-                  <p className="text-sm text-muted-foreground">라벨 위치 이미지를 업로드하세요</p>
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-sm font-medium text-muted-foreground">카테고리</label>
+                    <p className="text-foreground">{workOrder.category}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-muted-foreground">아이템</label>
+                    <p className="text-foreground">{workOrder.item}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-muted-foreground">우선순위</label>
+                    <p className="text-foreground">{workOrder.priority}</p>
+                  </div>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
 
-            {/* Fabric */}
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">원단</CardTitle>
-                <Button variant="ghost" size="sm">
-                  <X size={14} />
-                </Button>
-              </CardHeader>
-              <CardContent>
-                <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-10 text-center cursor-pointer hover:border-muted-foreground/50 transition-colors">
-                  <Upload size={24} className="mx-auto mb-3 text-muted-foreground" />
-                  <p className="text-sm text-muted-foreground">원단 이미지를 업로드하세요</p>
+              {/* Files */}
+              <div>
+                <h3 className="text-lg font-semibold mb-4">첨부 파일</h3>
+                <div className="space-y-2">
+                  {workOrder.files.map((file, index) => (
+                    <div key={index} className="flex items-center justify-between p-3 border border-border rounded-md">
+                      <div className="flex items-center gap-3">
+                        <FileText size={16} className="text-muted-foreground" />
+                        <div>
+                          <p className="font-medium">{file.name}</p>
+                          <p className="text-sm text-muted-foreground">{file.type} • {file.size}</p>
+                        </div>
+                      </div>
+                      <button className="p-2 hover:bg-muted rounded-md">
+                        <Download size={16} />
+                      </button>
+                    </div>
+                  ))}
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
+          )}
 
-            {/* Pattern */}
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">패턴</CardTitle>
-                <Button variant="ghost" size="sm">
-                  <X size={14} />
-                </Button>
-              </CardHeader>
-              <CardContent>
-                <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-10 text-center cursor-pointer hover:border-muted-foreground/50 transition-colors">
-                  <Upload size={24} className="mx-auto mb-3 text-muted-foreground" />
-                  <p className="text-sm text-muted-foreground">패턴 파일을 업로드하세요</p>
+          {activeTab === 'files' && (
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-semibold">파일 관리</h3>
+                <button className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90">
+                  파일 추가
+                </button>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {workOrder.files.map((file, index) => (
+                  <div key={index} className="p-4 border border-border rounded-lg">
+                    <div className="flex items-center justify-between mb-3">
+                      <FileText size={20} className="text-muted-foreground" />
+                      <button className="p-1 hover:bg-muted rounded">
+                        <MoreVertical size={16} />
+                      </button>
+                    </div>
+                    <h4 className="font-medium mb-1">{file.name}</h4>
+                    <p className="text-sm text-muted-foreground mb-3">{file.type} • {file.size}</p>
+                    <button className="w-full px-3 py-2 border border-border rounded-md hover:bg-muted text-sm">
+                      다운로드
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'history' && (
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold">작업 히스토리</h3>
+              <div className="space-y-3">
+                <div className="flex items-center gap-3 p-3 border border-border rounded-md">
+                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                  <div className="flex-1">
+                    <p className="font-medium">작업지시서 생성</p>
+                    <p className="text-sm text-muted-foreground">{workOrder.createdAt}</p>
+                  </div>
                 </div>
-              </CardContent>
-            </Card>
+                <div className="flex items-center gap-3 p-3 border border-border rounded-md">
+                  <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                  <div className="flex-1">
+                    <p className="font-medium">파일 업로드</p>
+                    <p className="text-sm text-muted-foreground">디자인_스케치.pdf</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 p-3 border border-border rounded-md">
+                  <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                  <div className="flex-1">
+                    <p className="font-medium">상태 변경</p>
+                    <p className="text-sm text-muted-foreground">진행중으로 변경</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
 
-            {/* Sub-materials */}
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">부자재</CardTitle>
-                <Button variant="ghost" size="sm">
-                  <X size={14} />
-                </Button>
-              </CardHeader>
-              <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="text-xs">품명</TableHead>
-                      <TableHead className="text-xs">컬러</TableHead>
-                      <TableHead className="text-xs">규격</TableHead>
-                      <TableHead className="text-xs">수량</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    <TableRow>
-                      <TableCell className="text-xs">주원단</TableCell>
-                      <TableCell className="text-xs">그레이</TableCell>
-                      <TableCell className="text-xs">9/16 in</TableCell>
-                      <TableCell className="text-xs">4</TableCell>
-                    </TableRow>
-                  </TableBody>
-                </Table>
-                <Button variant="outline" size="sm" className="mt-3">
-                  <Plus size={12} className="mr-2" />
-                </Button>
-              </CardContent>
-            </Card>
+          {activeTab === 'comments' && (
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold">댓글</h3>
+              <div className="space-y-4">
+                <div className="p-4 border border-border rounded-lg">
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-white text-sm">
+                      K
+                    </div>
+                    <div>
+                      <p className="font-medium">김디자이너</p>
+                      <p className="text-sm text-muted-foreground">2024-01-20 14:30</p>
+                    </div>
+                  </div>
+                  <p className="text-foreground">색상 팔레트 검토 완료했습니다. 다음 단계로 진행하겠습니다.</p>
+                </div>
+                <div className="p-4 border border-border rounded-lg">
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white text-sm">
+                      P
+                    </div>
+                    <div>
+                      <p className="font-medium">박매니저</p>
+                      <p className="text-sm text-muted-foreground">2024-01-19 16:45</p>
+                    </div>
+                  </div>
+                  <p className="text-foreground">디자인 방향성에 대해 논의가 필요합니다. 미팅 일정 조율해주세요.</p>
+                </div>
+              </div>
+              <div className="mt-6">
+                <textarea 
+                  placeholder="댓글을 입력하세요..."
+                  className="w-full p-3 border border-border rounded-md resize-none"
+                  rows={3}
+                ></textarea>
+                <button className="mt-2 px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90">
+                  댓글 작성
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
 
-            {/* Fabric Information */}
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">원단 정보</CardTitle>
-                <Button variant="ghost" size="sm">
-                  <X size={14} />
-                </Button>
-              </CardHeader>
-              <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="text-xs">위치</TableHead>
-                      <TableHead className="text-xs">업체/품명</TableHead>
-                      <TableHead className="text-xs">색상</TableHead>
-                      <TableHead className="text-xs">사이즈/단가</TableHead>
-                      <TableHead className="text-xs">혼용률</TableHead>
-                      <TableHead className="text-xs">요척</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    <TableRow>
-                      <TableCell className="text-xs">앞쪽 포켓</TableCell>
-                      <TableCell className="text-xs">패딧</TableCell>
-                      <TableCell className="text-xs">화이트</TableCell>
-                      <TableCell className="text-xs">60/6"/7,800</TableCell>
-                      <TableCell className="text-xs">C|면</TableCell>
-                      <TableCell className="text-xs">4y</TableCell>
-                    </TableRow>
-                  </TableBody>
-                </Table>
-                <Button variant="outline" size="sm" className="mt-3">
-                  <Plus size={12} className="mr-2" />
-                </Button>
-              </CardContent>
-            </Card>
+        {/* Sidebar */}
+        <div className="w-80 border-l border-border bg-card p-6">
+          <h3 className="text-lg font-semibold mb-4">작업 정보</h3>
+          <div className="space-y-4">
+            <div className="flex items-center gap-3">
+              <Calendar size={16} className="text-muted-foreground" />
+              <div>
+                <p className="text-sm font-medium">생성일</p>
+                <p className="text-sm text-muted-foreground">{workOrder.createdAt}</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <User size={16} className="text-muted-foreground" />
+              <div>
+                <p className="text-sm font-medium">담당자</p>
+                <p className="text-sm text-muted-foreground">{workOrder.assignedTo}</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <Tag size={16} className="text-muted-foreground" />
+              <div>
+                <p className="text-sm font-medium">상태</p>
+                <p className="text-sm text-muted-foreground">{workOrder.status}</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-6 pt-6 border-t border-border">
+            <h4 className="font-medium mb-3">작업</h4>
+            <div className="space-y-2">
+              <button className="w-full px-3 py-2 border border-border rounded-md hover:bg-muted text-left">
+                상태 변경
+              </button>
+              <button className="w-full px-3 py-2 border border-border rounded-md hover:bg-muted text-left">
+                담당자 변경
+              </button>
+              <button className="w-full px-3 py-2 border border-border rounded-md hover:bg-muted text-left">
+                복사
+              </button>
+              <button className="w-full px-3 py-2 border border-red-200 text-red-600 rounded-md hover:bg-red-50 text-left">
+                삭제
+              </button>
+            </div>
           </div>
         </div>
       </div>

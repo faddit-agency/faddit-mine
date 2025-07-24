@@ -20,19 +20,11 @@ import {
   Cloud,
   User
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent } from "@/components/ui/card";
-import { Switch } from "@/components/ui/switch";
-import { useTheme } from "next-themes";
-import { useUser, SignInButton, SignOutButton } from "@clerk/nextjs";
 
 export function DrivePage() {
   const [activeView, setActiveView] = useState<'grid' | 'list'>('grid');
   const [activeNav, setActiveNav] = useState('홈');
   const router = useRouter();
-  const { theme, setTheme } = useTheme();
-  const { user, isLoaded } = useUser();
 
   const folders = [
     { name: '2025 S/S 신상', count: 0 },
@@ -62,37 +54,6 @@ export function DrivePage() {
     router.push('/work-order/1');
   };
 
-  const toggleTheme = () => {
-    setTheme(theme === 'dark' ? 'light' : 'dark');
-  };
-
-  if (!isLoaded) {
-    return (
-      <div className="flex h-screen items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">로딩 중...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!user) {
-    return (
-      <div className="flex h-screen items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold mb-4">Fashion Docs에 오신 것을 환영합니다</h1>
-          <p className="text-muted-foreground mb-6">패션 디자인 문서화 시스템을 사용하려면 로그인해주세요.</p>
-          <SignInButton>
-            <Button size="lg">
-              로그인
-            </Button>
-          </SignInButton>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="flex h-screen bg-background text-foreground">
       {/* Sidebar */}
@@ -100,22 +61,17 @@ export function DrivePage() {
         {/* User Profile */}
         <div className="p-5 border-b border-border">
           <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center text-white text-xl mb-3">
-            {user.firstName?.charAt(0) || user.emailAddresses[0]?.emailAddress.charAt(0) || 'U'}
+            U
           </div>
           <div className="text-lg font-semibold text-foreground mb-1">
-            {user.firstName && user.lastName 
-              ? `${user.firstName} ${user.lastName}` 
-              : user.emailAddresses[0]?.emailAddress || '사용자'
-            }
+            사용자
           </div>
           <div className="text-sm text-muted-foreground">
-            {user.emailAddresses[0]?.emailAddress}
+            user@example.com
           </div>
-          <SignOutButton>
-            <Button variant="outline" size="sm" className="mt-3 w-full">
-              로그아웃
-            </Button>
-          </SignOutButton>
+          <button className="mt-3 w-full px-3 py-2 border border-border rounded-md hover:bg-muted">
+            로그아웃
+          </button>
         </div>
 
         {/* Navigation */}
@@ -151,10 +107,10 @@ export function DrivePage() {
           <div className="w-full h-1.5 bg-muted rounded-full mb-4 overflow-hidden">
             <div className="w-[8%] h-full bg-primary rounded-full"></div>
           </div>
-          <Button variant="outline" size="sm" className="w-full mb-3">
+          <button className="w-full mb-3 px-3 py-2 border border-border rounded-md hover:bg-muted flex items-center justify-center">
             <Plus size={12} className="mr-2" />
             저장공간 10GB 사용하기
-          </Button>
+          </button>
           <div className="text-xs text-muted-foreground leading-relaxed">
             Pro 요금제로 업그레이드하면 10GB 의 저장 공간을 사용할 수 있습니다.<br/>
             Pro 요금제 업그레이드 (출시 예정)
@@ -169,50 +125,46 @@ export function DrivePage() {
           <div className="flex items-center gap-4 flex-1 max-w-md">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={16} />
-              <Input 
+              <input 
                 placeholder="파일 제목을 검색하세요" 
-                className="pl-10"
+                className="w-full pl-10 pr-3 py-2 border border-border rounded-md bg-background"
               />
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <Button variant="outline" size="sm" onClick={toggleTheme}>
-              {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
-            </Button>
-            <Button>
+            <button className="px-3 py-2 border border-border rounded-md hover:bg-muted">
+              <Sun size={16} />
+            </button>
+            <button className="px-3 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 flex items-center">
               <Plus size={16} className="mr-2" />
               새 항목 추가
-            </Button>
+            </button>
           </div>
         </header>
 
         {/* Content */}
         <div className="flex-1 p-5 overflow-y-auto">
           {/* Banner */}
-          <Card className="mb-8 bg-gradient-to-r from-blue-500 to-purple-600 text-white">
-            <CardContent className="p-10 text-center">
-              <h2 className="text-2xl font-bold mb-4">WiiVE, Creative한 발상의 전환</h2>
-              <Button variant="secondary" className="bg-white/20 border-white/30 text-white hover:bg-white/30">
-                출시 예정 기능 보기
-              </Button>
-            </CardContent>
-          </Card>
+          <div className="mb-8 p-10 text-center bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg">
+            <h2 className="text-2xl font-bold mb-4">WiiVE, Creative한 발상의 전환</h2>
+            <button className="px-4 py-2 bg-white/20 border border-white/30 text-white rounded-md hover:bg-white/30">
+              출시 예정 기능 보기
+            </button>
+          </div>
 
           {/* Recent Designs */}
           <section className="mb-8">
             <h3 className="text-lg font-semibold text-foreground mb-5">최근 디자인</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
               {folders.map((folder, index) => (
-                <Card key={index} className="cursor-pointer hover:bg-muted/50 transition-colors">
-                  <CardContent className="p-5 text-center relative">
-                    <button className="absolute top-2 right-2 text-muted-foreground hover:text-foreground">
-                      <MoreVertical size={16} />
-                    </button>
-                    <div className="text-4xl mb-4">📁</div>
-                    <div className="font-medium text-foreground mb-1">{folder.name}</div>
-                    <div className="text-sm text-muted-foreground">{folder.count}개</div>
-                  </CardContent>
-                </Card>
+                <div key={index} className="p-5 text-center relative border border-border rounded-lg hover:bg-muted/50 transition-colors cursor-pointer">
+                  <button className="absolute top-2 right-2 text-muted-foreground hover:text-foreground">
+                    <MoreVertical size={16} />
+                  </button>
+                  <div className="text-4xl mb-4">📁</div>
+                  <div className="font-medium text-foreground mb-1">{folder.name}</div>
+                  <div className="text-sm text-muted-foreground">{folder.count}개</div>
+                </div>
               ))}
             </div>
           </section>
@@ -222,45 +174,45 @@ export function DrivePage() {
             <div className="flex items-center justify-between mb-5">
               <h3 className="text-lg font-semibold text-foreground">전체</h3>
               <div className="flex gap-1">
-                <Button
-                  variant={activeView === 'list' ? 'default' : 'outline'}
-                  size="sm"
+                <button
+                  className={`px-3 py-2 rounded-md ${
+                    activeView === 'list' ? 'bg-primary text-primary-foreground' : 'border border-border hover:bg-muted'
+                  }`}
                   onClick={() => setActiveView('list')}
                 >
                   <List size={16} />
-                </Button>
-                <Button
-                  variant={activeView === 'grid' ? 'default' : 'outline'}
-                  size="sm"
+                </button>
+                <button
+                  className={`px-3 py-2 rounded-md ${
+                    activeView === 'grid' ? 'bg-primary text-primary-foreground' : 'border border-border hover:bg-muted'
+                  }`}
                   onClick={() => setActiveView('grid')}
                 >
                   <Grid size={16} />
-                </Button>
+                </button>
               </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
               {files.map((file, index) => (
-                <Card key={index} className="cursor-pointer hover:bg-muted/50 transition-colors" onClick={handleFileClick}>
-                  <CardContent className="p-5 relative">
-                    <button className="absolute top-2 right-2 text-muted-foreground hover:text-foreground">
-                      <MoreVertical size={16} />
-                    </button>
-                    <div className="w-full h-32 bg-muted rounded-md mb-4 flex items-center justify-center relative">
-                      <div className="absolute top-2 left-2 bg-primary text-primary-foreground px-2 py-1 rounded text-xs font-medium">
-                        {file.type}
-                      </div>
-                      <div className="absolute top-2 right-2 bg-muted text-muted-foreground px-2 py-1 rounded text-xs">
-                        {file.extension}
-                      </div>
-                      <div className="text-center">
-                        <div className="text-2xl mb-1">👖</div>
-                        <div className="text-sm text-muted-foreground">도식화</div>
-                      </div>
+                <div key={index} className="p-5 relative border border-border rounded-lg hover:bg-muted/50 transition-colors cursor-pointer" onClick={handleFileClick}>
+                  <button className="absolute top-2 right-2 text-muted-foreground hover:text-foreground">
+                    <MoreVertical size={16} />
+                  </button>
+                  <div className="w-full h-32 bg-muted rounded-md mb-4 flex items-center justify-center relative">
+                    <div className="absolute top-2 left-2 bg-primary text-primary-foreground px-2 py-1 rounded text-xs font-medium">
+                      {file.type}
                     </div>
-                    <div className="font-medium text-foreground mb-1 text-left">{file.name}</div>
-                    <div className="text-sm text-muted-foreground text-left">{file.type} • {file.extension}</div>
-                  </CardContent>
-                </Card>
+                    <div className="absolute top-2 right-2 bg-muted text-muted-foreground px-2 py-1 rounded text-xs">
+                      {file.extension}
+                    </div>
+                    <div className="text-center">
+                      <div className="text-2xl mb-1">👖</div>
+                      <div className="text-sm text-muted-foreground">도식화</div>
+                    </div>
+                  </div>
+                  <div className="font-medium text-foreground mb-1 text-left">{file.name}</div>
+                  <div className="text-sm text-muted-foreground text-left">{file.type} • {file.extension}</div>
+                </div>
               ))}
             </div>
           </section>

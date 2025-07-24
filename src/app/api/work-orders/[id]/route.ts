@@ -1,30 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
-import { auth } from '@clerk/nextjs/server';
 
 export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
-    const { userId } = await auth();
-    
-    if (!userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const { data, error } = await supabase
-      .from('work_orders')
-      .select('*')
-      .eq('id', params.id)
-      .eq('user_id', userId)
-      .single();
-
-    if (error) {
-      return NextResponse.json({ error: 'Work order not found' }, { status: 404 });
-    }
-
-    return NextResponse.json(data);
+    // 임시 응답 - 환경 변수 설정 후 실제 구현으로 교체
+    return NextResponse.json({
+      message: 'Work order detail endpoint ready - environment variables need to be configured',
+      status: 'pending',
+      id: params.id
+    });
   } catch (error) {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
@@ -35,27 +21,12 @@ export async function PUT(
   { params }: { params: { id: string } }
 ) {
   try {
-    const { userId } = await auth();
-    
-    if (!userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const body = await request.json();
-    
-    const { data, error } = await supabase
-      .from('work_orders')
-      .update({ ...body, updated_at: new Date().toISOString() })
-      .eq('id', params.id)
-      .eq('user_id', userId)
-      .select()
-      .single();
-
-    if (error) {
-      return NextResponse.json({ error: error.message }, { status: 400 });
-    }
-
-    return NextResponse.json(data);
+    // 임시 응답 - 환경 변수 설정 후 실제 구현으로 교체
+    return NextResponse.json({
+      message: 'Work order update endpoint ready - environment variables need to be configured',
+      status: 'pending',
+      id: params.id
+    });
   } catch (error) {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
@@ -66,23 +37,12 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    const { userId } = await auth();
-    
-    if (!userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const { error } = await supabase
-      .from('work_orders')
-      .delete()
-      .eq('id', params.id)
-      .eq('user_id', userId);
-
-    if (error) {
-      return NextResponse.json({ error: error.message }, { status: 400 });
-    }
-
-    return NextResponse.json({ message: 'Work order deleted successfully' });
+    // 임시 응답 - 환경 변수 설정 후 실제 구현으로 교체
+    return NextResponse.json({
+      message: 'Work order deletion endpoint ready - environment variables need to be configured',
+      status: 'pending',
+      id: params.id
+    });
   } catch (error) {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
