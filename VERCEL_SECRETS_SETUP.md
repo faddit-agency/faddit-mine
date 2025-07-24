@@ -30,6 +30,23 @@ VERCEL_ORG_ID: jay-1346s-projects
 VERCEL_PROJECT_ID: prj_kaYfWoQfIHG228ciAyRZyG1TUAqY
 ```
 
+#### Supabase 환경 변수
+```
+NEXT_PUBLIC_SUPABASE_URL: [Supabase 프로젝트 URL]
+NEXT_PUBLIC_SUPABASE_ANON_KEY: [Supabase Anon Key]
+```
+
+#### Clerk 환경 변수
+```
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: [Clerk Publishable Key]
+CLERK_SECRET_KEY: [Clerk Secret Key]
+```
+
+#### 기타 환경 변수
+```
+NEXT_PUBLIC_APP_URL: https://faddit-mine-jay-1346s-projects.vercel.app
+```
+
 ### 2. Secrets 추가 방법
 
 1. **VERCEL_TOKEN**:
@@ -43,6 +60,26 @@ VERCEL_PROJECT_ID: prj_kaYfWoQfIHG228ciAyRZyG1TUAqY
 3. **VERCEL_PROJECT_ID**:
    - Name: `VERCEL_PROJECT_ID`
    - Value: `prj_kaYfWoQfIHG228ciAyRZyG1TUAqY`
+
+4. **NEXT_PUBLIC_SUPABASE_URL**:
+   - Name: `NEXT_PUBLIC_SUPABASE_URL`
+   - Value: Supabase 프로젝트 설정에서 확인
+
+5. **NEXT_PUBLIC_SUPABASE_ANON_KEY**:
+   - Name: `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+   - Value: Supabase 프로젝트 설정에서 확인
+
+6. **NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY**:
+   - Name: `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`
+   - Value: Clerk 대시보드에서 확인
+
+7. **CLERK_SECRET_KEY**:
+   - Name: `CLERK_SECRET_KEY`
+   - Value: Clerk 대시보드에서 확인
+
+8. **NEXT_PUBLIC_APP_URL**:
+   - Name: `NEXT_PUBLIC_APP_URL`
+   - Value: `https://faddit-mine-jay-1346s-projects.vercel.app`
 
 ## 🚀 자동 배포 테스트
 
@@ -129,7 +166,9 @@ vercel --prod --env production
 - [ ] GitHub 저장소 생성 및 연결
 - [ ] GitHub Actions 워크플로우 설정
 - [ ] Vercel Personal Access Token 생성
-- [ ] GitHub Secrets 설정 (3개)
+- [ ] GitHub Secrets 설정 (8개)
+- [ ] Supabase 프로젝트 설정
+- [ ] Clerk 프로젝트 설정
 - [ ] 테스트 배포 성공
 - [ ] 자동 배포 확인
 
