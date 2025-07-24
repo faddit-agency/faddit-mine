@@ -47,10 +47,16 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Failed to save file record' }, { status: 500 });
     }
 
+    // Supabase URL이 설정되어 있는지 확인
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const fileUrl = supabaseUrl 
+      ? `${supabaseUrl}/storage/v1/object/public/work-order-files/${fileName}`
+      : null;
+
     return NextResponse.json({ 
       success: true, 
       file: fileRecord,
-      url: `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/work-order-files/${fileName}`
+      url: fileUrl
     });
 
   } catch (error) {

@@ -81,6 +81,23 @@ NEXT_PUBLIC_APP_URL: https://faddit-mine-jay-1346s-projects.vercel.app
    - Name: `NEXT_PUBLIC_APP_URL`
    - Value: `https://faddit-mine-jay-1346s-projects.vercel.app`
 
+## 🔍 Vercel 프로젝트 정보 확인
+
+### 프로젝트 정보
+- **프로젝트 이름**: `faddit-mine`
+- **프로젝트 ID**: `prj_kaYfWoQfIHG228ciAyRZyG1TUAqY`
+- **조직 ID**: `jay-1346s-projects`
+- **배포 URL**: https://faddit-mine-jay-1346s-projects.vercel.app
+
+### 확인 명령어
+```bash
+# 프로젝트 목록 확인
+npx vercel project ls
+
+# 프로젝트 상세 정보 확인
+npx vercel project inspect faddit-mine
+```
+
 ## 🚀 자동 배포 테스트
 
 ### 1. 테스트 커밋 생성
