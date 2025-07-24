@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+
 import styled from 'styled-components';
-import { FiArrowLeft, FiX, FiPlus, FiMinus, FiDownload, FiEye, FiEdit3, FiTrash2, FiMoreVertical, FiShare, FiCalendar, FiCloud } from 'react-icons/fi';
+import { FiPlus, FiDownload, FiCloud, FiEdit3, FiShare, FiCalendar } from 'react-icons/fi';
 import { useTheme } from '../contexts/ThemeContext';
 
 const Container = styled.div`
@@ -406,22 +406,6 @@ const Td = styled.td`
   font-size: 12px;
 `;
 
-const QuantityInput = styled.input`
-  width: 60px;
-  padding: 6px 8px;
-  border: 1px solid ${props => props.theme.colors.border};
-  border-radius: 4px;
-  background-color: ${props => props.theme.colors.surfaceSecondary};
-  color: ${props => props.theme.colors.text};
-  text-align: center;
-  font-size: 12px;
-
-  &:focus {
-    outline: none;
-    border-color: ${props => props.theme.colors.primary};
-  }
-`;
-
 const DateInput = styled.div`
   position: relative;
   display: flex;
@@ -435,8 +419,6 @@ const DateIcon = styled.div`
 `;
 
 function WorkOrderDetail() {
-  const { id } = useParams();
-  const navigate = useNavigate();
   const theme = useTheme();
   const [showDetails, setShowDetails] = useState(true);
   const [activeTab, setActiveTab] = useState('2025 F/W 프라다 여성 신상');
@@ -944,7 +926,7 @@ function WorkOrderDetail() {
                     <Td theme={theme}>앞쪽 포켓</Td>
                     <Td theme={theme}>패딧</Td>
                     <Td theme={theme}>화이트</Td>
-                    <Td theme={theme}>60/6"/7,800</Td>
+                    <Td theme={theme}>60/6&quot;/7,800</Td>
                     <Td theme={theme}>C|면</Td>
                     <Td theme={theme}>4y</Td>
                   </tr>

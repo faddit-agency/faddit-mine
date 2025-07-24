@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useUser, SignInButton, SignOutButton } from '@clerk/nextjs';
-import { supabase } from '@/lib/supabase';
+
 import { 
   Home, 
   FileText, 
@@ -14,41 +14,14 @@ import {
   Grid, 
   List, 
   MoreVertical, 
-  Download, 
-  Eye, 
-  Sun, 
-  Moon,
-  Cloud,
-  User,
-  ChevronRight,
-  Settings,
-  ArrowLeft,
-  ArrowRight,
-  RotateCcw
+  Sun
 } from "lucide-react";
 
-interface WorkOrder {
-  id: string;
-  title: string;
-  description?: string;
-  status: string;
-  priority: string;
-  created_at: string;
-  due_date?: string;
-  created_by_user?: {
-    full_name: string;
-    email: string;
-  };
-  assigned_to_user?: {
-    full_name: string;
-    email: string;
-  };
-}
+
 
 export default function DrivePage() {
   const { user, isLoaded } = useUser();
-  const [workOrders, setWorkOrders] = useState<WorkOrder[]>([]);
-  const [loading, setLoading] = useState(true);
+
   const [activeNav, setActiveNav] = useState('홈');
   const [activeView, setActiveView] = useState<'grid' | 'list'>('grid');
   const [showNewWorkOrderForm, setShowNewWorkOrderForm] = useState(false);
@@ -59,25 +32,9 @@ export default function DrivePage() {
     due_date: ''
   });
 
-  useEffect(() => {
-    if (isLoaded && user) {
-      fetchWorkOrders();
-    }
-  }, [isLoaded, user]);
 
-  const fetchWorkOrders = async () => {
-    try {
-      const response = await fetch('/api/work-orders');
-      if (response.ok) {
-        const data = await response.json();
-        setWorkOrders(data);
-      }
-    } catch (error) {
-      console.error('Error fetching work orders:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+
+
 
   const createWorkOrder = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -95,30 +52,13 @@ export default function DrivePage() {
       if (response.ok) {
         setNewWorkOrder({ title: '', description: '', priority: 'medium', due_date: '' });
         setShowNewWorkOrderForm(false);
-        fetchWorkOrders();
       }
     } catch (error) {
       console.error('Error creating work order:', error);
     }
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'completed': return 'bg-green-100 text-green-800';
-      case 'in_progress': return 'bg-blue-100 text-blue-800';
-      case 'cancelled': return 'bg-red-100 text-red-800';
-      default: return 'bg-yellow-100 text-yellow-800';
-    }
-  };
 
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case 'urgent': return 'bg-red-100 text-red-800';
-      case 'high': return 'bg-orange-100 text-orange-800';
-      case 'medium': return 'bg-yellow-100 text-yellow-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
-  };
 
   if (!isLoaded) {
     return <div className="flex justify-center items-center h-screen">Loading...</div>;

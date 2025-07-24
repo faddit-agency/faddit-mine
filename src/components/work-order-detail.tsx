@@ -7,7 +7,6 @@ import {
   Download, 
   Share, 
   Edit, 
-  Trash2, 
   MoreVertical,
   FileText,
   Calendar,

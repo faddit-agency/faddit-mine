@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { FiHome, FiFileText, FiFolder, FiStar, FiTrash2, FiSearch, FiPlus, FiGrid, FiList, FiMoreVertical, FiDownload, FiEye, FiSun, FiMoon } from 'react-icons/fi';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { FiHome, FiFileText, FiFolder, FiStar, FiTrash2, FiSearch, FiPlus, FiGrid, FiList, FiMoreVertical, FiSun, FiMoon } from 'react-icons/fi';
 import { useTheme } from '../contexts/ThemeContext';
 
 const DriveContainer = styled.div`
